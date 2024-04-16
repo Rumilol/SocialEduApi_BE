@@ -17,28 +17,42 @@ namespace SocialEduApi
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlite(dataSource));
 
+            builder.Services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+            });
+            builder.Services.AddAuthorization();
             builder.Services.AddControllers();
-            
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             app.UseHttpsRedirection();
-
+            app.MapIdentityApi<ApplicationUser>();
+            app.UseAuthorization();
             app.MapControllers();
 
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 context.Database.Migrate();
-                
             }
 
             app.UseDeveloperExceptionPage();
 
-            app.Run();
 
-            
+
+            app.Run();
         }
 
     }

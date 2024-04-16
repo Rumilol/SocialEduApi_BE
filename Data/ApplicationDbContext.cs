@@ -6,11 +6,10 @@ using SocialEduApi.Models.Entities;
 
 namespace SocialEduApi.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
            
-    
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
