@@ -34,6 +34,12 @@ namespace SocialEduApi
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
 
+            builder.Services.AddCors(options => options.AddPolicy("all", policy => {
+                policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            }));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -47,9 +53,8 @@ namespace SocialEduApi
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 context.Database.Migrate();
             }
-
+            app.UseCors("all");
             app.UseDeveloperExceptionPage();
-
 
 
             app.Run();
