@@ -51,7 +51,10 @@ namespace SocialEduApi
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var rolemanager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 context.Database.Migrate();
+                await DbInitializer.Initialize(userManager, context, rolemanager);
             }
             app.UseCors("all");
             app.UseDeveloperExceptionPage();
