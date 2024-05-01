@@ -1,10 +1,9 @@
-﻿
-
-using Bogus;
+﻿using Bogus;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Identity;
 using SocialEduApi.Data;
 using SocialEduApi.Models.Identity;
-
+using SocialEduApi.Models.ViewModels;
 
 namespace SocialEduApi.Models.Entities
 {
@@ -18,6 +17,18 @@ namespace SocialEduApi.Models.Entities
         public string? PageBackground { get; set; }
 
 
+        public async Task<IList<UserVM_short>> GetUsersAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            var returned = new List<UserVM_short>();
+            var belongses = context.UserInstitutionBelongses.Where(p => p.InstitutionID == Id).ToList();
+            foreach (var belongs in belongses)
+            {
+                var user = await userManager.FindByIdAsync(belongs.UserID);
+                returned.Add(new UserVM_short(user));
+            }
+            return returned;
+        }
+
         public static Faker<Institution> GetFaker()
         {
             return new Faker<Institution>("hr")
@@ -28,6 +39,5 @@ namespace SocialEduApi.Models.Entities
                 .RuleFor(x => x.Image, y => "")
                 .RuleFor(x => x.PageBackground, y => "");
         }
-
     }
 }
