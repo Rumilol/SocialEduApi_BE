@@ -30,6 +30,7 @@ namespace SocialEduApi.Data
         public DbSet<UserOnSubject> UsersOnSubjects { get; set; }
         public DbSet<ApplicationUser> AspNetUsers { get; set; }
         public DbSet<IdentityRole> AspNetRoles { get; set; }
-        
+        public DbSet<ChatMessage> ChatMessages { get; set; } = default!;
+
     }
 }
