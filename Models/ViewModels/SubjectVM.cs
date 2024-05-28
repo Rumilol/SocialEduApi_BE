@@ -23,11 +23,13 @@ namespace SocialEduApi.Models.ViewModels
                          List<Forum> forums,
                          List<ForumPost> forumPosts,
                          List<ProjectTask> projectTasks,
-                         List<ProjectSubmission> submissions) : this(subject)
+                         List<ProjectSubmission> submissions,
+                         List<ProjectSubmissionLike> submissionsLikes,
+                         string userId) : this(subject)
         {
             GetUsers(users);
             GetForums(forums, forumPosts);
-            GetProjectTasks(projectTasks, submissions, users);
+            GetProjectTasks(projectTasks, submissions, users, submissionsLikes, userId);
             GetMainPerson(users);
         }
 
@@ -58,13 +60,17 @@ namespace SocialEduApi.Models.ViewModels
             Forums = subjectForums.Select(p => new ForumVM(p, forumPosts)).ToList();
         }
 
-        private void GetProjectTasks(List<ProjectTask> projectTasks, List<ProjectSubmission>? projectSubmissions, List<UserOnSubject>? users)
+        private void GetProjectTasks(List<ProjectTask> projectTasks,
+                                     List<ProjectSubmission>? projectSubmissions,
+                                     List<UserOnSubject>? users,
+                                     List<ProjectSubmissionLike> projectSubmissionLikes,
+                                     string userId)
         {
             if (projectTasks == null) return;
             if (projectSubmissions == null) return;
             var thisSubjectTasks = projectTasks.Where(p => p.SubjectID == Id).ToList();
             var userVMs = users.Select(p => new UserVM_short(p)).ToList();
-            ProjectTasks = thisSubjectTasks.Select(p => new ProjectTaskVM(p, projectSubmissions, userVMs)).ToList();
+            ProjectTasks = thisSubjectTasks.Select(p => new ProjectTaskVM(p, projectSubmissions, userVMs, projectSubmissionLikes, userId)).ToList();
         }
 
         private void GetMainPerson(List<UserOnSubject>? users)

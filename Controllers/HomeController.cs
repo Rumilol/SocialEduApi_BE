@@ -64,10 +64,11 @@ namespace SocialEduApi.Controllers
                                                       .OrderByDescending(p => p.UploadDate);
 
             var users = _context.Users.AsNoTracking().ToList().Select(p => new UserVM_short(p)).ToList();
+            var allLikes = _context.ProjectSubmissionLikes.AsNoTracking().ToList();
 
             var vms = submissions.DistinctBy(p => p.Id)
                                  .OrderByDescending(p => p.UploadDate)
-                                 .Select(p => new ProjectSubmissionVM(p, users))
+                                 .Select(p => new ProjectSubmissionVM(p, users, allLikes, user.Id))
                                  .Take(5)
                                  .ToList();
 

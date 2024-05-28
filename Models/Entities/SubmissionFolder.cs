@@ -31,7 +31,8 @@ namespace SocialEduApi.Models.Entities
                 .Select(p => p.Submission!)
                 .ToList();
             var users = context.Users.ToList().Select(p => new UserVM_short(p)).ToList();
-            Submissions = submissions.Select(p => new ProjectSubmissionVM(p, users)).ToList();
+            var allLikes = context.ProjectSubmissionLikes.AsNoTracking().ToList();
+            Submissions = submissions.Select(p => new ProjectSubmissionVM(p, users, allLikes, UserID)).ToList();
         }
 
         public static Faker<SubmissionFolder> GetFaker(string userID)

@@ -54,8 +54,8 @@ namespace SocialEduApi.Controllers
             {
                 return NotFound("Nije pronađen folder");
             }
-            submissionsFolder.GetSubmissions(_context);
             var user = await _userManager.FindByIdAsync(submissionsFolder.UserID);
+            submissionsFolder.GetSubmissions(_context);
 
             return new SubmissionsFolderVM(submissionsFolder, user.Email);
         }

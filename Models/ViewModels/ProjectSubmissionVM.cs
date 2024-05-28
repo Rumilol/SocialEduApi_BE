@@ -28,20 +28,24 @@ namespace SocialEduApi.Models.ViewModels
             Grade = submission.Grade;
             UploadDate = submission.UploadDate;
         }
-        public ProjectSubmissionVM(ProjectSubmission submission, List<UserVM_short>? users) : this(submission)
+        public ProjectSubmissionVM(ProjectSubmission submission,
+                                   List<UserVM_short>? users,
+                                   List<ProjectSubmissionLike> allLikes,
+                                   string UserId) : this(submission)
         {
             GetComments(users);
+            GetLikes(allLikes, UserId);
         }
 
         public int? Id { get; set; }
         public int? SubjectID { get; set; }
         public Subject? Subject { get; set; }
-            public string? SubjectName { get; set; }
-            public string? InstitutionName { get; set; }
-            public string? InstitutionAbbreviation { get; set; }
+        public string? SubjectName { get; set; }
+        public string? InstitutionName { get; set; }
+        public string? InstitutionAbbreviation { get; set; }
         public int? ProjectTaskID { get; set; }
         public ProjectTask? ProjectTask { get; set; }
-            public string? ProjectTaskTitle { get; set; }
+        public string? ProjectTaskTitle { get; set; }
         public string? UserEmail { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
@@ -54,6 +58,8 @@ namespace SocialEduApi.Models.ViewModels
         public DateTime? UploadDate { get; set; }
 
         public List<CommentVM>? Comments { get; set; }
+        public int LikeCount { get; set; }
+        public bool UserLiked { get; set; }
 
         private void GetComments(List<UserVM_short>? users)
         {
@@ -68,6 +74,15 @@ namespace SocialEduApi.Models.ViewModels
                 new CommentVM(2, "Imao sam istu ideju!", users[rndnum2]),
                 new CommentVM(3, "Ovo bi moglo biti korisno na drugoj godini diplomskog.", users[rndnum3]),
             };
+        }
+
+        private void GetLikes(List<ProjectSubmissionLike> allLikes, string userId)
+        {
+            var thisPostLikes = allLikes.Where(p => p.ProjectSubmissionID == Id).ToList();
+            LikeCount = thisPostLikes.Count;
+            var userLike = allLikes.FirstOrDefault(p => p.UserId == userId && p.ProjectSubmissionID == Id);
+            if (userLike == null) UserLiked = false;
+            else UserLiked = true;
         }
     }
 }

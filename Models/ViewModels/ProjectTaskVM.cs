@@ -18,9 +18,13 @@ namespace SocialEduApi.Models.ViewModels
             MaxGrade = projectTask.MaxGrade;
         }
 
-        public ProjectTaskVM(ProjectTask projectTask, List<ProjectSubmission>? submissions, List<UserVM_short> users) : this(projectTask)
+        public ProjectTaskVM(ProjectTask projectTask,
+                             List<ProjectSubmission>? submissions,
+                             List<UserVM_short> users,
+                             List<ProjectSubmissionLike> projectSubmissionLikes,
+                             string userId) : this(projectTask)
         {
-            GetProjectSubmissions(submissions, users);
+            GetProjectSubmissions(submissions, users, projectSubmissionLikes,  userId);
         }
 
         public int? Id { get; set; }
@@ -34,12 +38,15 @@ namespace SocialEduApi.Models.ViewModels
 
         public List<ProjectSubmissionVM>? Submissions { get; set; }
 
-        private void GetProjectSubmissions(List<ProjectSubmission>? submissions, List<UserVM_short>? users)
+        private void GetProjectSubmissions(List<ProjectSubmission>? submissions,
+                                           List<UserVM_short>? users,
+                                           List<ProjectSubmissionLike> projectSubmissionLikes,
+                                           string userId)
         {
             if (submissions == null) return;
             if (users == null || users.Count() == 0) return;
             var thisProjectSubmissions = submissions.Where(s => s.ProjectTaskID == Id);
-            Submissions = thisProjectSubmissions.Select(p => new ProjectSubmissionVM(p, users)).ToList();
+            Submissions = thisProjectSubmissions.Select(p => new ProjectSubmissionVM(p, users, projectSubmissionLikes, userId)).ToList();
         }
 
         public ProjectTask GetProjectTask()

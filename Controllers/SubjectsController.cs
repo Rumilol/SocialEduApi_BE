@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,7 @@ namespace SocialEduApi.Controllers
 
         // GET: api/Subjects/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<SubjectVM>> GetSubject(int id)
         {
             var subject = await _context.Subjects.Include(p => p.Institution).FirstOrDefaultAsync(p => p.Id == id);
@@ -86,7 +88,10 @@ namespace SocialEduApi.Controllers
                                                 .Where(p => forumIDs.Contains(p.ForumID))
                                                 .ToList();
 
-            var vm = new SubjectVM(subject, members, forums, forumPosts, projectTasks, projectTaskSubmissions);
+            var submissionIds = projectTaskSubmissions.Select(p => p.Id).ToList();
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var likes = _context.ProjectSubmissionLikes.Where(p => submissionIds.Contains(p.ProjectSubmissionID)).ToList();
+            var vm = new SubjectVM(subject, members, forums, forumPosts, projectTasks, projectTaskSubmissions, likes, user.Id);
 
             return vm;
         }
