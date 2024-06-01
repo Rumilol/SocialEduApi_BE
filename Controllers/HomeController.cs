@@ -75,10 +75,10 @@ namespace SocialEduApi.Controllers
             return vms;
         }
 
-        [HttpGet("searchresults/{email}")]
-        public async Task<ActionResult<IEnumerable<SearchResultVM>>> GetSearchResults(string email)
+        [HttpGet("searchresults")]
+        public async Task<ActionResult<IEnumerable<SearchResultVM>>> GetSearchResults(SearchRequest request)
         {
-            return SearchResultVM.GetGenericResults(_context, email);
+            return SearchResultVM.GetSearchResults(request.SearchString, _context, request.UserEmail);
         }
     }
 }

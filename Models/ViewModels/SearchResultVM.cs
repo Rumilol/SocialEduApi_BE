@@ -65,5 +65,49 @@ namespace SocialEduApi.Models.ViewModels
             }
             return results;
         }
+
+        public static List<SearchResultVM> GetSearchResults(string search, ApplicationDbContext context, string email)
+        {
+            var results = new List<SearchResultVM>();
+            var thisUser = context.Users.FirstOrDefault(p => p.Email == email);
+            if (thisUser == null) return GetGenericSearchResults(context);
+
+            var users = context.Users.ToList()
+                                     .Where(p => p.Email != email && (
+                                            p.UserName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                            p.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                            p.LastName.Contains(search,StringComparison.OrdinalIgnoreCase)
+                                            ))
+                                     .ToList();
+            foreach (var user in users)
+            {
+                results.Add(new SearchResultVM(results.Count + 1, user));
+            }
+
+            var institutions = context.Institutions.ToList().Where(p => p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) || 
+                                                               p.Abbreviation.Contains(search, StringComparison.OrdinalIgnoreCase))
+                                .ToList();
+            foreach (var institution in institutions)
+            {
+                results.Add(new SearchResultVM(results.Count + 1, institution));
+            }
+
+            var submissions = context.ProjectSubmissions.Include(p => p.User)
+                                                        .ToList()
+                                                        .Where(p => p.Title.Contains(search, StringComparison.OrdinalIgnoreCase))
+                                                        .ToList();
+            foreach(var submission in submissions)
+            {
+                results.Add(new SearchResultVM(results.Count+1, submission));
+            }
+
+            return results;
+        }
+
+        private static List<SearchResultVM> GetGenericSearchResults(ApplicationDbContext context)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
