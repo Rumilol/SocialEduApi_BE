@@ -75,7 +75,7 @@ namespace SocialEduApi.Controllers
             return vms;
         }
 
-        [HttpGet("searchresults")]
+        [HttpPost("searchresults")]
         public async Task<ActionResult<IEnumerable<SearchResultVM>>> GetSearchResults(SearchRequest request)
         {
             return SearchResultVM.GetSearchResults(request.SearchString, _context, request.UserEmail);
